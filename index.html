@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaria RDT & Treatment Monthly Supply Tracking - Sierra Leone</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #2ea043, #58a6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            margin-bottom: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .logo-label {
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 18px;
+        }
+
+        .stats-bar {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: rgba(13, 17, 23, 0.6);
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-item {
+            color: #58a6ff;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .breadcrumb-item:hover {
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .breadcrumb-item.active {
+            color: #e6edf3;
+            background: rgba(88, 166, 255, 0.2);
+        }
+
+        .breadcrumb-separator {
+            color: #8b949e;
+        }
+
+        .search-filter {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .search-input, .filter-select {
+            width: 100%;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 12px 16px;
+            color: #e6edf3;
+            font-size: 16px;
+        }
+
+        .search-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            color: #8b949e;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .back-button {
+            background: transparent;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .districts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .chiefdoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .facilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .region-card, .district-card, .chiefdom-card, .facility-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .region-card:hover, .district-card:hover, .chiefdom-card:hover, .facility-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(88, 166, 255, 0.15);
+            border-color: #58a6ff;
+        }
+
+        .region-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #238636, #2ea043, #58a6ff);
+        }
+
+        .district-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f0ad4e, #d58512);
+        }
+
+        .chiefdom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #58a6ff, #7c3aed);
+        }
+
+        .facility-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #7c3aed, #ec4899);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .card-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e6edf3;
+            margin-bottom: 5px;
+        }
+
+        .card-type {
+            color: #8b949e;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stats-value {
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .click-hint {
+            text-align: center;
+            color: #8b949e;
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        /* Monthly Supply Tracking Dashboard */
+        .tracking-dashboard {
+            display: grid;
+            gap: 30px;
+        }
+
+        .monthly-supply-section {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .monthly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        .month-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .month-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.1);
+            border-color: #58a6ff;
+        }
+
+        .month-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f85149, #f0ad4e, #2ea043);
+        }
+
+        .month-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .commodity-section {
+            margin-bottom: 20px;
+        }
+
+        .commodity-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .commodity-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e6edf3;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .commodity-section.rdt .commodity-title {
+            background: rgba(88, 166, 255, 0.1);
+            border-left: 3px solid #58a6ff;
+        }
+
+        .commodity-section.act .commodity-title {
+            background: rgba(46, 160, 67, 0.1);
+            border-left: 3px solid #2ea043;
+        }
+
+        .commodity-section.severe .commodity-title {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #7c3aed;
+        }
+
+        .supply-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(13, 17, 23, 0.6);
+            border-radius: 6px;
+            border-left: 3px solid #30363d;
+        }
+
+        .metric-row.opening { border-left-color: #58a6ff; }
+        .metric-row.received { border-left-color: #2ea043; }
+        .metric-row.used { border-left-color: #f0ad4e; }
+        .metric-row.balance { border-left-color: #7c3aed; }
+        .metric-row.status { border-left-color: #f85149; }
+
+        .metric-label {
+            font-size: 13px;
+            color: #8b949e;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e6edf3;
+            text-align: right;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            justify-content: center;
+        }
+
+        .status-indicator.adequate {
+            background: rgba(46, 160, 67, 0.15);
+            color: #2ea043;
+        }
+
+        .status-indicator.low {
+            background: rgba(240, 173, 78, 0.15);
+            color: #f0ad4e;
+        }
+
+        .status-indicator.critical {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .alerts-section {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid #f85149;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alerts-title {
+            color: #f85149;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 81, 73, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #f85149;
+            margin-bottom: 10px;
+        }
+
+        .no-alerts {
+            text-align: center;
+            color: #2ea043;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 8px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: #161b22;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .section-hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .no-results {
+            text-align: center;
+            color: #8b949e;
+            font-style: italic;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .logos {
+                padding: 0 10px;
+            }
+
+            .logo-placeholder {
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
+            }
+
+            .regions-grid, .districts-grid, .chiefdoms-grid, .facilities-grid, .monthly-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logos">
+                <div class="logo-container">
+                    <div class="logo-placeholder">NMCP-SL</div>
+                    <div class="logo-label">National Malaria Control Programme</div>
+                </div>
+                <div class="logo-container">
+                    <div class="logo-placeholder" style="background: linear-gradient(135deg, #f85149, #ec4899);">MoHS</div>
+                    <div class="logo-label">Ministry of Health - Sierra Leone</div>
+                </div>
+            </div>
+            <h1 class="title">Malaria RDT & Treatment Monthly Supply Tracking</h1>
+            <p class="subtitle">Real-time monitoring of commodity supply and consumption by health facility</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <span class="stat-number" id="totalFacilities">0</span>
+                <span class="stat-label">Health Facilities</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="totalDistricts">0</span>
+                <span class="stat-label">Districts</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="totalRegions">0</span>
+                <span class="stat-label">Regions</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="currentMonth">Current</span>
+                <span class="stat-label">Tracking Period</span>
+            </div>
+        </div>
+
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="breadcrumb-item active" onclick="showRegions()">Regions</span>
+        </div>
+
+        <!-- Regions Section -->
+        <div id="regions-section">
+            <div class="regions-grid" id="regionsGrid"></div>
+        </div>
+
+        <!-- Districts Section -->
+        <div id="districts-section" class="section-hidden">
+            <button class="back-button" onclick="showRegions()">Back to Regions</button>
+            <div class="districts-grid" id="districtsGrid"></div>
+        </div>
+
+        <!-- Chiefdoms Section -->
+        <div id="chiefdoms-section" class="section-hidden">
+            <button class="back-button" onclick="showDistricts()">Back to Districts</button>
+            <div class="chiefdoms-grid" id="chiefdomsGrid"></div>
+        </div>
+
+        <!-- Facilities Section -->
+        <div id="facilities-section" class="section-hidden">
+            <button class="back-button" onclick="showChiefdoms()">Back to Chiefdoms</button>
+            <div class="search-filter">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search facilities...">
+            </div>
+            <div class="facilities-grid" id="facilitiesGrid"></div>
+        </div>
+
+        <!-- Facility Supply Tracking Dashboard -->
+        <div id="tracking-dashboard-section" class="section-hidden">
+            <button class="back-button" onclick="showFacilities()">Back to Facilities</button>
+            
+            <div id="facility-info" class="stats-bar"></div>
+
+            <!-- Filters -->
+            <div class="search-filter">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Year</label>
+                        <select id="yearSelector" class="filter-select">
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2025">2025</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Month Filter</label>
+                        <select id="monthFilterSelector" class="filter-select">
+                            <option value="all">All Months</option>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div id="alertsSection" class="alerts-section" style="display: none;">
+                <div class="alerts-title">SUPPLY ALERTS</div>
+                <div id="alertsList"></div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div id="summarySection" class="summary-stats" style="display: none;"></div>
+
+            <!-- Monthly Supply Tracking -->
+            <div class="tracking-dashboard">
+                <div class="monthly-supply-section">
+                    <div class="section-title">Monthly Supply Tracking</div>
+                    <div class="monthly-grid" id="monthlyGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structures
+        let regionsData = {};
+        let chiefdomsData = {};
+        let healthFacilitiesData = {};
+        let monthlySupplyData = {};
+
+        let currentRegion = null;
+        let currentDistrict = null;
+        let currentChiefdom = null;
+        let currentFacility = null;
+        let selectedYear = '2024';
+        let selectedMonthFilter = 'all';
+
+        // Initialize with sample data
+        function initializeSampleData() {
+            // Sample regions structure
+            regionsData = {
+                'Northern': ['Bombali', 'Kambia', 'Koinadugu', 'Port Loko', 'Tonkolili'],
+                'Southern': ['Bo', 'Bonthe', 'Moyamba', 'Pujehun'],
+                'Eastern': ['Kailahun', 'Kenema', 'Kono'],
+                'Western Area': ['Western Area Rural', 'Western Area Urban']
+            };
+
+            // Sample chiefdoms
+            chiefdomsData = {
+                'Bombali': ['Makari Gbanti', 'Sanda Loko', 'Gbanti Kamaranka'],
+                'Bo': ['Kakua', 'Jaiama Bongor', 'Baoma'],
+                'Kenema': ['Nongowa', 'Dama', 'Gorama Mende'],
+                'Western Area Urban': ['Zone 1', 'Zone 2', 'Zone 3']
+            };
+
+            // Sample facilities
+            healthFacilitiesData = {
+                'Makari Gbanti': [
+                    { name: 'Makeni Government Hospital', type: 'Hospital', inCharge: 'Dr. Mohamed Kamara', contact: '+232 76 123456' },
+                    { name: 'Masongbo CHC', type: 'CHC', inCharge: 'Nurse Fatmata Sesay', contact: '+232 77 234567' }
+                ],
+                'Kakua': [
+                    { name: 'Kakua CHC', type: 'CHC', inCharge: 'Nurse Ibrahim Bangura', contact: '+232 78 345678' },
+                    { name: 'Gerihun MCHP', type: 'MCHP', inCharge: 'CHW Aminata Conteh', contact: '+232 76 456789' }
+                ],
+                'Nongowa': [
+                    { name: 'Nongowa CHC', type: 'CHC', inCharge: 'Nurse Alpha Turay', contact: '+232 77 567890' }
+                ],
+                'Zone 1': [
+                    { name: 'Connaught Hospital', type: 'Hospital', inCharge: 'Dr. Kadiatu Kargbo', contact: '+232 78 678901' }
+                ]
+            };
+
+            // Generate sample monthly supply data
+            generateSampleMonthlySupply();
+        }
+
+        function generateSampleMonthlySupply() {
+            const facilities = [];
+            Object.values(healthFacilitiesData).forEach(facilityList => {
+                facilities.push(...facilityList);
+            });
+
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+
+            facilities.forEach(facility => {
+                monthlySupplyData[facility.name] = {};
+                ['2023', '2024'].forEach(year => {
+                    monthlySupplyData[facility.name][year] = {};
+                    
+                    let prevRdtBalance = 0;
+                    let prevActBalance = 0;
+                    let prevSevereBalance = 0;
+
+                    months.forEach((month, index) => {
+                        const multiplier = facility.type === 'Hospital' ? 5 : facility.type === 'CHC' ? 2 : 1;
+                        
+                        // For first month, generate opening balance
+                        const rdtOpening = index === 0 ? Math.floor(Math.random() * 500 * multiplier) + 200 : prevRdtBalance;
+                        const actOpening = index === 0 ? Math.floor(Math.random() * 400 * multiplier) + 150 : prevActBalance;
+                        const severeOpening = index === 0 ? Math.floor(Math.random() * 50 * multiplier) + 20 : prevSevereBalance;
+
+                        const rdtReceived = Math.floor(Math.random() * 1000 * multiplier) + 500;
+                        const actReceived = Math.floor(Math.random() * 800 * multiplier) + 400;
+                        const severeReceived = Math.floor(Math.random() * 100 * multiplier) + 50;
+
+                        const rdtUsed = Math.floor(Math.random() * 800 * multiplier) + 300;
+                        const actUsed = Math.floor(Math.random() * 600 * multiplier) + 250;
+                        const severeUsed = Math.floor(Math.random() * 80 * multiplier) + 20;
+
+                        const rdtBalance = rdtOpening + rdtReceived - rdtUsed;
+                        const actBalance = actOpening + actReceived - actUsed;
+                        const severeBalance = severeOpening + severeReceived - severeUsed;
+
+                        monthlySupplyData[facility.name][year][month] = {
+                            rdt: {
+                                opening: rdtOpening,
+                                received: rdtReceived,
+                                used: rdtUsed,
+                                balance: rdtBalance
+                            },
+                            act: {
+                                opening: actOpening,
+                                received: actReceived,
+                                used: actUsed,
+                                balance: actBalance
+                            },
+                            severe: {
+                                opening: severeOpening,
+                                received: severeReceived,
+                                used: severeUsed,
+                                balance: severeBalance
+                            }
+                        };
+
+                        prevRdtBalance = rdtBalance;
+                        prevActBalance = actBalance;
+                        prevSevereBalance = severeBalance;
+                    });
+                });
+            });
+        }
+
+        function calculateStats() {
+            const totalFacilities = Object.values(healthFacilitiesData).reduce((sum, facilities) => sum + facilities.length, 0);
+            const totalDistricts = Object.keys(chiefdomsData).length;
+            const totalRegions = Object.keys(regionsData).length;
+            
+            document.getElementById('totalFacilities').textContent = totalFacilities;
+            document.getElementById('totalDistricts').textContent = totalDistricts;
+            document.getElementById('totalRegions').textContent = totalRegions;
+            
+            const now = new Date();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+        }
+
+        function showRegions() {
+            document.getElementById('regions-section').classList.remove('section-hidden');
+            document.getElementById('districts-section').classList.add('section-hidden');
+            document.getElementById('chiefdoms-section').classList.add('section-hidden');
+            document.getElementById('facilities-section').classList.add('section-hidden');
+            document.getElementById('tracking-dashboard-section').classList.add('section-hidden');
+            
+            currentRegion = null;
+            currentDistrict = null;
+            currentChiefdom = null;
+            currentFacility = null;
+            updateBreadcrumb();
+            renderRegions();
+        }
+
+        function showDistricts(regionName = null) {
+            if (regionName) currentRegion = regionName;
+            
+            document.getElementById('regions-section').classList.add('section-hidden');
+            document.getElementById('districts-section').classList.remove('section-hidden');
+            document.getElementById('chiefdoms-section').classList.add('section-hidden');
+            document.getElementById('facilities-section').classList.add('section-hidden');
+            document.getElementById('tracking-dashboard-section').classList.add('section-hidden');
+            
+            currentDistrict = null;
+            currentChiefdom = null;
+            currentFacility = null;
+            updateBreadcrumb();
+            renderDistricts();
+        }
+
+        function showChiefdoms(districtName = null) {
+            if (districtName) currentDistrict = districtName;
+            
+            document.getElementById('regions-section').classList.add('section-hidden');
+            document.getElementById('districts-section').classList.add('section-hidden');
+            document.getElementById('chiefdoms-section').classList.remove('section-hidden');
+            document.getElementById('facilities-section').classList.add('section-hidden');
+            document.getElementById('tracking-dashboard-section').classList.add('section-hidden');
+            
+            currentChiefdom = null;
+            currentFacility = null;
+            updateBreadcrumb();
+            renderChiefdoms();
+        }
+
+        function showFacilities(chiefdomName = null) {
+            if (chiefdomName) currentChiefdom = chiefdomName;
+            
+            document.getElementById('regions-section').classList.add('section-hidden');
+            document.getElementById('districts-section').classList.add('section-hidden');
+            document.getElementById('chiefdoms-section').classList.add('section-hidden');
+            document.getElementById('facilities-section').classList.remove('section-hidden');
+            document.getElementById('tracking-dashboard-section').classList.add('section-hidden');
+            
+            currentFacility = null;
+            updateBreadcrumb();
+            renderFacilities();
+        }
+
+        function showTrackingDashboard(facility) {
+            currentFacility = facility;
+            
+            document.getElementById('regions-section').classList.add('section-hidden');
+            document.getElementById('districts-section').classList.add('section-hidden');
+            document.getElementById('chiefdoms-section').classList.add('section-hidden');
+            document.getElementById('facilities-section').classList.add('section-hidden');
+            document.getElementById('tracking-dashboard-section').classList.remove('section-hidden');
+            
+            updateBreadcrumb();
+            updateFacilityInfo();
+            setupFilters();
+            renderMonthlySupply();
+            checkAlerts();
+            renderSummary();
+        }
+
+        function updateFacilityInfo() {
+            const facilityInfo = document.getElementById('facility-info');
+            facilityInfo.innerHTML = `
+                <div style="text-align: center; width: 100%;">
+                    <h2 style="color: #58a6ff; margin-bottom: 10px;">${currentFacility.name}</h2>
+                    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 15px;">
+                        <div>
+                            <span style="color: #8b949e; font-size: 12px;">TYPE:</span>
+                            <span style="color: #e6edf3; font-weight: 600; margin-left: 5px;">${currentFacility.type}</span>
+                        </div>
+                        <div>
+                            <span style="color: #8b949e; font-size: 12px;">LOCATION:</span>
+                            <span style="color: #e6edf3; font-weight: 600; margin-left: 5px;">${currentChiefdom}, ${currentDistrict}</span>
+                        </div>
+                        <div>
+                            <span style="color: #8b949e; font-size: 12px;">IN-CHARGE:</span>
+                            <span style="color: #e6edf3; font-weight: 600; margin-left: 5px;">${currentFacility.inCharge}</span>
+                        </div>
+                        <div>
+                            <span style="color: #8b949e; font-size: 12px;">CONTACT:</span>
+                            <span style="color: #58a6ff; font-weight: 500; margin-left: 5px;">${currentFacility.contact}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupFilters() {
+            const yearSelector = document.getElementById('yearSelector');
+            const monthFilterSelector = document.getElementById('monthFilterSelector');
+            
+            yearSelector.value = selectedYear;
+            monthFilterSelector.value = selectedMonthFilter;
+            
+            yearSelector.addEventListener('change', function() {
+                selectedYear = this.value;
+                renderMonthlySupply();
+                checkAlerts();
+                renderSummary();
+            });
+            
+            monthFilterSelector.addEventListener('change', function() {
+                selectedMonthFilter = this.value;
+                renderMonthlySupply();
+            });
+        }
+
+        function renderMonthlySupply() {
+            const monthlyGrid = document.getElementById('monthlyGrid');
+            monthlyGrid.innerHTML = '';
+            
+            if (!monthlySupplyData[currentFacility.name] || !monthlySupplyData[currentFacility.name][selectedYear]) {
+                monthlyGrid.innerHTML = '<div class="no-results">No supply data available for this period</div>';
+                return;
+            }
+            
+            const yearData = monthlySupplyData[currentFacility.name][selectedYear];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const monthsToShow = selectedMonthFilter === 'all' ? months : [selectedMonthFilter];
+            
+            monthsToShow.forEach(month => {
+                if (!yearData[month]) return;
+                
+                const monthData = yearData[month];
+                const card = document.createElement('div');
+                card.className = 'month-card fade-in';
+                
+                card.innerHTML = `
+                    <div class="month-header">${month} ${selectedYear}</div>
+                    
+                    <div class="commodity-section rdt">
+                        <div class="commodity-title">RDT Test Kits</div>
+                        <div class="supply-metrics">
+                            <div class="metric-row opening">
+                                <div class="metric-label">Opening Balance</div>
+                                <div class="metric-value">${monthData.rdt.opening.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row received">
+                                <div class="metric-label">Received</div>
+                                <div class="metric-value">${monthData.rdt.received.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row used">
+                                <div class="metric-label">Used</div>
+                                <div class="metric-value">${monthData.rdt.used.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row balance">
+                                <div class="metric-label">Closing Balance</div>
+                                <div class="metric-value">${monthData.rdt.balance.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row status">
+                                <div class="metric-label">Status</div>
+                                <span class="status-indicator ${getSupplyStatus(monthData.rdt.balance, 'rdt', currentFacility.type).class}">
+                                    ${getSupplyStatus(monthData.rdt.balance, 'rdt', currentFacility.type).text}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="commodity-section act">
+                        <div class="commodity-title">ACT (Artemisinin Combination Therapy)</div>
+                        <div class="supply-metrics">
+                            <div class="metric-row opening">
+                                <div class="metric-label">Opening Balance</div>
+                                <div class="metric-value">${monthData.act.opening.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row received">
+                                <div class="metric-label">Received</div>
+                                <div class="metric-value">${monthData.act.received.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row used">
+                                <div class="metric-label">Used</div>
+                                <div class="metric-value">${monthData.act.used.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row balance">
+                                <div class="metric-label">Closing Balance</div>
+                                <div class="metric-value">${monthData.act.balance.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row status">
+                                <div class="metric-label">Status</div>
+                                <span class="status-indicator ${getSupplyStatus(monthData.act.balance, 'act', currentFacility.type).class}">
+                                    ${getSupplyStatus(monthData.act.balance, 'act', currentFacility.type).text}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="commodity-section severe">
+                        <div class="commodity-title">Severe Malaria Treatment (Injectable)</div>
+                        <div class="supply-metrics">
+                            <div class="metric-row opening">
+                                <div class="metric-label">Opening Balance</div>
+                                <div class="metric-value">${monthData.severe.opening.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row received">
+                                <div class="metric-label">Received</div>
+                                <div class="metric-value">${monthData.severe.received.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row used">
+                                <div class="metric-label">Used</div>
+                                <div class="metric-value">${monthData.severe.used.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row balance">
+                                <div class="metric-label">Closing Balance</div>
+                                <div class="metric-value">${monthData.severe.balance.toLocaleString()}</div>
+                            </div>
+                            <div class="metric-row status">
+                                <div class="metric-label">Status</div>
+                                <span class="status-indicator ${getSupplyStatus(monthData.severe.balance, 'severe', currentFacility.type).class}">
+                                    ${getSupplyStatus(monthData.severe.balance, 'severe', currentFacility.type).text}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                monthlyGrid.appendChild(card);
+            });
+        }
+
+        function getSupplyStatus(balance, commodityType, facilityType) {
+            const thresholds = {
+                'Hospital': {
+                    'rdt': { adequate: 2500, low: 1000 },
+                    'act': { adequate: 2000, low: 800 },
+                    'severe': { adequate: 250, low: 100 }
+                },
+                'CHC': {
+                    'rdt': { adequate: 1000, low: 400 },
+                    'act': { adequate: 800, low: 320 },
+                    'severe': { adequate: 100, low: 40 }
+                },
+                'CHP': {
+                    'rdt': { adequate: 500, low: 200 },
+                    'act': { adequate: 400, low: 160 },
+                    'severe': { adequate: 50, low: 20 }
+                },
+                'MCHP': {
+                    'rdt': { adequate: 500, low: 200 },
+                    'act': { adequate: 400, low: 160 },
+                    'severe': { adequate: 50, low: 20 }
+                },
+                'Clinic': {
+                    'rdt': { adequate: 500, low: 200 },
+                    'act': { adequate: 400, low: 160 },
+                    'severe': { adequate: 50, low: 20 }
+                }
+            };
+            
+            const threshold = thresholds[facilityType] ? thresholds[facilityType][commodityType] : thresholds['Clinic'][commodityType];
+            
+            if (balance >= threshold.adequate) {
+                return { class: 'adequate', text: 'Adequate' };
+            } else if (balance >= threshold.low) {
+                return { class: 'low', text: 'Low Stock' };
+            } else {
+                return { class: 'critical', text: 'Critical' };
+            }
+        }
+
+        function checkAlerts() {
+            const alertsSection = document.getElementById('alertsSection');
+            const alertsList = document.getElementById('alertsList');
+            const alerts = [];
+            
+            if (!monthlySupplyData[currentFacility.name] || !monthlySupplyData[currentFacility.name][selectedYear]) {
+                alertsSection.style.display = 'none';
+                return;
+            }
+            
+            const yearData = monthlySupplyData[currentFacility.name][selectedYear];
+            const months = Object.keys(yearData);
+            
+            months.forEach(month => {
+                const monthData = yearData[month];
+                
+                ['rdt', 'act', 'severe'].forEach(commodity => {
+                    const status = getSupplyStatus(monthData[commodity].balance, commodity, currentFacility.type);
+                    if (status.class !== 'adequate') {
+                        const commodityName = commodity === 'rdt' ? 'RDT' : commodity === 'act' ? 'ACT' : 'Severe Treatment';
+                        alerts.push({
+                            month: month,
+                            commodity: commodityName,
+                            status: status.text,
+                            balance: monthData[commodity].balance,
+                            severity: status.class
+                        });
+                    }
+                });
+            });
+            
+            if (alerts.length === 0) {
+                alertsSection.style.display = 'none';
+            } else {
+                alertsSection.style.display = 'block';
+                alertsList.innerHTML = '';
+                alerts.forEach(alert => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item';
+                    alertItem.innerHTML = `
+                        <div>
+                            <div style="font-weight: 700; color: #e6edf3;">${alert.commodity} - ${alert.month}</div>
+                            <div style="font-size: 14px; color: #8b949e;">Balance: ${alert.balance.toLocaleString()}</div>
+                        </div>
+                        <span class="status-indicator ${alert.severity}">${alert.status}</span>
+                    `;
+                    alertsList.appendChild(alertItem);
+                });
+            }
+        }
+
+        function renderSummary() {
+            const summarySection = document.getElementById('summarySection');
+            
+            if (!monthlySupplyData[currentFacility.name] || !monthlySupplyData[currentFacility.name][selectedYear]) {
+                summarySection.style.display = 'none';
+                return;
+            }
+            
+            const yearData = monthlySupplyData[currentFacility.name][selectedYear];
+            const months = Object.keys(yearData);
+            
+            let totalRdtReceived = 0, totalRdtUsed = 0;
+            let totalActReceived = 0, totalActUsed = 0;
+            let totalSevereReceived = 0, totalSevereUsed = 0;
+            
+            months.forEach(month => {
+                const monthData = yearData[month];
+                totalRdtReceived += monthData.rdt.received;
+                totalRdtUsed += monthData.rdt.used;
+                totalActReceived += monthData.act.received;
+                totalActUsed += monthData.act.used;
+                totalSevereReceived += monthData.severe.received;
+                totalSevereUsed += monthData.severe.used;
+            });
+            
+            summarySection.style.display = 'grid';
+            summarySection.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Total RDT Received</div>
+                    <div class="summary-value">${totalRdtReceived.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total RDT Used</div>
+                    <div class="summary-value">${totalRdtUsed.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total ACT Received</div>
+                    <div class="summary-value">${totalActReceived.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total ACT Used</div>
+                    <div class="summary-value">${totalActUsed.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total Severe Received</div>
+                    <div class="summary-value">${totalSevereReceived.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total Severe Used</div>
+                    <div class="summary-value">${totalSevereUsed.toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            let html = '<span class="breadcrumb-item' + (!currentRegion ? ' active' : '') + '" onclick="showRegions()">Regions</span>';
+            
+            if (currentRegion) {
+                html += '<span class="breadcrumb-separator">›</span>';
+                html += '<span class="breadcrumb-item' + (!currentDistrict ? ' active' : '') + '" onclick="showDistricts()">' + currentRegion + '</span>';
+            }
+            
+            if (currentDistrict) {
+                html += '<span class="breadcrumb-separator">›</span>';
+                html += '<span class="breadcrumb-item' + (!currentChiefdom ? ' active' : '') + '" onclick="showChiefdoms()">' + currentDistrict + '</span>';
+            }
+
+            if (currentChiefdom) {
+                html += '<span class="breadcrumb-separator">›</span>';
+                html += '<span class="breadcrumb-item' + (!currentFacility ? ' active' : '') + '" onclick="showFacilities()">' + currentChiefdom + '</span>';
+            }
+
+            if (currentFacility) {
+                html += '<span class="breadcrumb-separator">›</span>';
+                html += '<span class="breadcrumb-item active">' + currentFacility.name + '</span>';
+            }
+            
+            breadcrumb.innerHTML = html;
+        }
+
+        function renderRegions() {
+            const grid = document.getElementById('regionsGrid');
+            grid.innerHTML = '';
+            
+            Object.keys(regionsData).forEach(regionName => {
+                const districts = regionsData[regionName];
+                let totalChiefdoms = 0;
+                let totalFacilities = 0;
+                
+                districts.forEach(district => {
+                    if (chiefdomsData[district]) {
+                        totalChiefdoms += chiefdomsData[district].length;
+                        chiefdomsData[district].forEach(chiefdom => {
+                            if (healthFacilitiesData[chiefdom]) {
+                                totalFacilities += healthFacilitiesData[chiefdom].length;
+                            }
+                        });
+                    }
+                });
+                
+                const card = document.createElement('div');
+                card.className = 'region-card fade-in';
+                card.onclick = () => showDistricts(regionName);
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-name">${regionName}</div>
+                            <div class="card-type">Region</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #8b949e; font-size: 12px;">Facilities</div>
+                            <div class="stats-value">${totalFacilities}</div>
+                        </div>
+                    </div>
+                    <div class="click-hint">Click to view districts</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function renderDistricts() {
+            const grid = document.getElementById('districtsGrid');
+            grid.innerHTML = '';
+            
+            if (!currentRegion) return;
+            
+            const districts = regionsData[currentRegion];
+            
+            districts.forEach(districtName => {
+                const chiefdoms = chiefdomsData[districtName] || [];
+                let totalFacilities = 0;
+                
+                chiefdoms.forEach(chiefdom => {
+                    if (healthFacilitiesData[chiefdom]) {
+                        totalFacilities += healthFacilitiesData[chiefdom].length;
+                    }
+                });
+                
+                const card = document.createElement('div');
+                card.className = 'district-card fade-in';
+                card.onclick = () => showChiefdoms(districtName);
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-name">${districtName}</div>
+                            <div class="card-type">District</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #8b949e; font-size: 12px;">Facilities</div>
+                            <div class="stats-value">${totalFacilities}</div>
+                        </div>
+                    </div>
+                    <div class="click-hint">Click to view chiefdoms</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function renderChiefdoms() {
+            const grid = document.getElementById('chiefdomsGrid');
+            grid.innerHTML = '';
+            
+            if (!currentDistrict) return;
+            
+            const chiefdoms = chiefdomsData[currentDistrict] || [];
+            
+            chiefdoms.forEach(chiefdomName => {
+                const facilities = healthFacilitiesData[chiefdomName] || [];
+                
+                const card = document.createElement('div');
+                card.className = 'chiefdom-card fade-in';
+                
+                if (facilities.length > 0) {
+                    card.onclick = () => showFacilities(chiefdomName);
+                }
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-name">${chiefdomName}</div>
+                            <div class="card-type">Chiefdom</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #8b949e; font-size: 12px;">Facilities</div>
+                            <div class="stats-value">${facilities.length}</div>
+                        </div>
+                    </div>
+                    ${facilities.length > 0 ? '<div class="click-hint">Click to view facilities</div>' : ''}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function renderFacilities() {
+            const grid = document.getElementById('facilitiesGrid');
+            grid.innerHTML = '';
+            
+            if (!currentChiefdom) return;
+            
+            const facilities = healthFacilitiesData[currentChiefdom] || [];
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filteredFacilities = facilities.filter(f => 
+                f.name.toLowerCase().includes(searchTerm) || 
+                f.inCharge.toLowerCase().includes(searchTerm)
+            );
+            
+            filteredFacilities.forEach(facility => {
+                const card = document.createElement('div');
+                card.className = 'facility-card fade-in';
+                card.onclick = () => showTrackingDashboard(facility);
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-name">${facility.name}</div>
+                            <div class="card-type">${facility.type}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <div style="color: #8b949e; font-size: 12px; margin-bottom: 5px;">IN-CHARGE</div>
+                        <div style="color: #e6edf3; font-weight: 600; margin-bottom: 10px;">${facility.inCharge}</div>
+                        <div style="color: #8b949e; font-size: 12px; margin-bottom: 5px;">CONTACT</div>
+                        <div style="color: #58a6ff;">${facility.contact}</div>
+                    </div>
+                    <div class="click-hint">Click to view monthly supply tracking</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            // Setup search
+            document.getElementById('searchInput').addEventListener('input', renderFacilities);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSampleData();
+            calculateStats();
+            showRegions();
+        });
+    </script>
+</body>
+</html>
